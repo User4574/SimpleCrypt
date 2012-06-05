@@ -2,16 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-void sanitise(char *x) {
-	char *curpos = x;
-	while (*x != '\0') {
-		*curpos = *x;
-		x++;
-		if (*curpos != '/') curpos++;
-	}
-	*curpos = '\0';
-}
+#include <time.h>
 
 int main(int argc, char** argv) {
 	char * junk;
@@ -24,8 +15,9 @@ int main(int argc, char** argv) {
 	FILE* file = fopen(argv[1], "r");
 	/* And a temporary file to hold the encrypted data */
 	char tpath[255] = "/tmp/";
-	sanitise(argv[1]);
-	strcat(tpath, argv[1]);
+	char timeS[32];
+	sprintf(timeS, "%d", (int) time(NULL));
+	strcat(tpath, timeS);
 	FILE* temp = fopen(tpath, "w");
 	
 	char passphrase[255];
