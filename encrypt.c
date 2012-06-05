@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
 	} while (strlen(passphrase) <= 0);
 	
 	// And a temporary file to hold the encrypted data
-	char tpath[] = "/tmp/SimCr.XXXXXX";
+	char tpath[] = "SimCr.XXXXXX";
 	int tempfd = mkstemp(tpath);
 	FILE* temp = fdopen(tempfd, "w");
 	
@@ -48,9 +48,7 @@ int main(int argc, char** argv) {
 	fclose(file);
 
 	// Move the file back
-	char *cmd = malloc(strlen(tpath) + strlen(argv[1]) + 11);
-	sprintf(cmd, "%s %s %s", "/bin/mv", tpath, argv[1]);
-	if (system(cmd) != 0) {
+	if (rename(tpath, argv[1]) != 0) {
 		fprintf(stderr, "Your encrypted file is located in %s.", tpath);
 		return EXIT_FAILURE;
 	}
