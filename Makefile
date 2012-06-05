@@ -1,7 +1,7 @@
 CFLAGS=-Wall -Wextra
 
 encrypt:	encrypt.c
-	gcc ${CFLAGS} ${EFLAGS} -o $@ $^
+	gcc ${CFLAGS} -o $@ $^
 
 install:
 	cp encrypt /usr/local/bin/encrypt
