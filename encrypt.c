@@ -1,36 +1,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 int main(int argc, char** argv) {
-	if(argc==0) {
+	/* We need a file to encrypt */
+	if(argc==1) {
 		fprintf(stderr, "Arguments fool!");
 		return 1;
 	}
+	/* Now lets open that file */
 	FILE* file = fopen(argv[1], "r");
-	fseek(file, 0, SEEK_END);
-	int length = ftell(file);
-	fseek(file, 0, SEEK_SET);
-	char filearr[length];
-	fread(filearr, length, 1, file);
-	fclose(file);
+	/* And a temporary file to hold the encrypted data */
+	char tpath[255] = "/tmp/";
+	strcat(tpath, argv[1]);
+	FILE* temp = fopen(tpath, "w");
+	/* Now we need the passphrase. Get it */
 	printf("Enter Passphrase:\n");
-	char passphrase[81];
-	fgets(passphrase, 81, stdin);
+	char passphrase[255];
+	fgets(passphrase, 255, stdin);
 	int passlen = strlen(passphrase) - 1;
-	int i=0,j=0;
-	for(i=0;i<length;i++) {
-		if(j==passlen) {
-			j=0;
-			i--;
+	int c,j=0;
+	/* Now we encrypt! */
+	while((c=fgetc(file)) != EOF) {
+	if(j==passlen) {
+			fputc(c+passphrase[0], temp);
+			j=1;
 		} else {
-			filearr[i] += passphrase[j];
+			fputc(c+passphrase[j], temp);
 			j++;
 		}
 	}
-	file = fopen(argv[1], "w");
-	fwrite(filearr, 1, length, file);
-	fflush(file);
+	/* Close the files */
+	fflush(temp);
+	fclose(temp);
 	fclose(file);
+	/* Move the file back */
+	char cmd[255];
+	sprintf(cmd, "%s %s %s", "/bin/mv", tpath, argv[1]);
+	system(cmd);
 	return 0;
 }
+
