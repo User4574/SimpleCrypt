@@ -41,13 +41,13 @@ int main(int argc, char** argv) {
 	int tempfd = mkstemp(tpath);
 	FILE* temp = fdopen(tempfd, "w");
 
-	// Now we encrypt!
+	// Now we decrypt!
 	int passlen = strlen(passphrase) - 2;
 	int c, d, j = 0;
 
 	while ((c=fgetc(file)) != EOF) {
-		d = c + passphrase[j];
-		passphrase[j] = d;
+		d = c - passphrase[j];
+		passphrase[j] = c;
 		fputc(d, temp);
 
 		if (j == passlen) j=0;
